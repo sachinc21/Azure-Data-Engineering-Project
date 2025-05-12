@@ -230,9 +230,3 @@ The project is structured using the Medallion Architecture to separate data proc
 3. **Synapse Query Results (Top Authors, Daily Commits)**
 4. **Data Ingestion Sample JSON Files**
 
-## 📦 Next Steps
-- Implement real-time data streaming using Kafka and Spark Streaming
-- Develop a Power BI dashboard to visualize commit trends and top authors
-
-## 🤝 Connect
-Feel free to connect with me on [LinkedIn](https://www.linkedin.com) to discuss this project or potential collaborations!
