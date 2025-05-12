@@ -109,6 +109,91 @@ The project is structured using the Medallion Architecture to separate data proc
   - `/gold/commit_summary/` - Aggregated data in Parquet format
 
 ### Step 4: Data Querying (Azure Synapse Analytics)
+- Synapse was utilized to create external tables and views based on the transformed data stored in the Silver and Gold layers of Azure Data Lake Gen2. This enables querying large datasets without physically moving data.
+
+#### Credential and Data Source Setup:
+- A **Managed Identity** credential was created to securely access the data in Azure Data Lake:
+  ```sql
+  CREATE DATABASE SCOPED CREDENTIAL cred_sachin
+  WITH IDENTITY = 'Managed Identity';
+  ```
+
+- External Data Sources for Silver and Gold layers:
+  ```sql
+  CREATE EXTERNAL DATA SOURCE source_silver
+  WITH (
+      LOCATION = 'https://storagedatalakede.blob.core.windows.net/silver',
+      CREDENTIAL = cred_sachin
+  );
+
+  CREATE EXTERNAL DATA SOURCE source_gold
+  WITH (
+      LOCATION = 'https://storagedatalakede.blob.core.windows.net/gold',
+      CREDENTIAL = cred_sachin
+  );
+  ```
+
+#### External File Format Setup:
+- Parquet format with Snappy compression was defined to ensure efficient querying:
+  ```sql
+  CREATE EXTERNAL FILE FORMAT format_parquet
+  WITH (
+      FORMAT_TYPE = PARQUET,
+      DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
+  );
+  ```
+
+#### External Table Creation:
+- Example: External Table for `Sales` data:
+  ```sql
+  CREATE EXTERNAL TABLE gold.extsales
+  WITH (
+      LOCATION = 'extsales',
+      DATA_SOURCE = source_gold,
+      FILE_FORMAT = format_parquet
+  ) AS
+  SELECT * FROM gold.sales;
+
+  SELECT * FROM gold.extsales;
+  ```
+
+#### Creating Views from Silver Layer:
+- Views were created to simplify data access and facilitate analytics:
+  - **Calendar Data:**
+  ```sql
+  CREATE VIEW gold.calendar AS
+  SELECT * FROM
+  OPENROWSET(
+      BULK 'https://storagedatalakede.blob.core.windows.net/silver/AdventureWorks_Calendar/',
+      FORMAT = 'PARQUET'
+  ) AS QUERY1;
+  ```
+
+  - **Customers Data:**
+  ```sql
+  CREATE VIEW gold.customers AS
+  SELECT * FROM
+  OPENROWSET(
+      BULK 'https://storagedatalakede.blob.core.windows.net/silver/AdventureWorks_Customers/',
+      FORMAT = 'PARQUET'
+  ) AS QUERY1;
+  ```
+
+  - **Products Data:**
+  ```sql
+  CREATE VIEW gold.products AS
+  SELECT * FROM
+  OPENROWSET(
+      BULK 'https://storagedatalakede.blob.core.windows.net/silver/AdventureWorks_Products/',
+      FORMAT = 'PARQUET'
+  ) AS QUERY1;
+  ```
+
+#### Creating the Gold Schema:
+- A `gold` schema was created to logically group the external tables and views:
+  ```sql
+  CREATE SCHEMA gold;
+  ```
 - Connect Synapse to the Gold layer in Azure Data Lake Gen2.
 - Create external tables to query data using T-SQL.
 - Example Queries:
