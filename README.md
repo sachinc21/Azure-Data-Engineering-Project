@@ -1,6 +1,3 @@
-# Azure-Data-Engineering-Project
-End-to-end Azure data engineering pipeline using Data Factory, Databricks, and Synapse.
-
 # Azure Data Engineering Project - End-to-End Data Pipeline
 
 ## 🚀 Project Overview
@@ -43,6 +40,58 @@ The project is structured using the Medallion Architecture to separate data proc
   - Commit Message
 
 ### Step 2: Data Transformation (Azure Databricks)
+- Create a Databricks notebook for data processing.
+- Implement the following transformations using PySpark:
+
+#### Data Loading:
+- Data is read from the Bronze layer as CSV files using PySpark.
+- Datasets include Calendar, Customers, Product Categories, Products, Returns, Sales, Territories, and Subcategories.
+
+#### Data Transformation:
+- **Calendar Data:** Extract month and year from the date column and write as Parquet to the Silver layer.
+  ```python
+  df_cal = df_cal.withColumn('Month', month(col('Date')))
+                 .withColumn('Year', year(col('Date')))
+  df_cal.write.format('parquet')
+              .mode('append')
+              .option("path", "abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Calendar")
+              .save()
+  ```
+
+- **Customers Data:** Concatenate first name, last name, and prefix to create a full name column. Data is reordered and saved as Parquet.
+  ```python
+  df_cus = df_cus.withColumn('FullName', concat_ws(' ', col('Prefix'), col('FirstName'), col('LastName')))
+  desired_order = ['CustomerKey', 'Prefix', 'FirstName','FullName', 'LastName', 'BirthDate', 'MaritalStatus', 'Gender', 'EmailAddress', 'AnnualIncome', 'TotalChildren', 'EducationLevel', 'Occupation', 'HomeOwner']
+  df_cus = df_cus.select(*desired_order)
+  df_cus.write.format('parquet')
+                .mode('append')
+                .save('abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Customerrs')
+  ```
+
+- **Product Data:** Split ProductSKU and ProductName columns and write to Silver layer.
+  ```python
+  df_pro = df_pro.withColumn('ProductSKU', split(col('ProductSKU'), '-')[0])
+                  .withColumn('ProductName', split(col('ProductName'), ' ')[0])
+  df_pro.write.format('parquet')
+                .mode('append')
+                .save('abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Products')
+  ```
+
+- **Sales Data:**
+  - Convert StockDate to timestamp
+  - Replace 'S' with 'T' in OrderNumber
+  - Add a calculated column 'Multiply'
+  ```python
+  df_sales = df_sales.withColumn('StockDate', to_timestamp('StockDate'))
+  df_sales = df_sales.withColumn('OrderNumber', regexp_replace(col('OrderNumber'), 'S', 'T'))
+  df_sales = df_sales.withColumn('Multiply', col('OrderLineItem') * col('OrderQuantity'))
+  df_sales.write.format('parquet')
+                .mode('append')
+                .save('abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Sales')
+  ```
+
+- **Territories and Returns Data:** Directly written to Silver layer as Parquet.
+
 - Create a Databricks notebook for data processing.
 - Implement the following transformations using PySpark:
   - Schema definition and enforcement
