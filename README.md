@@ -59,7 +59,7 @@ The project is structured using the Medallion Architecture to separate data proc
               .save()
   ```
 
-![image](https://github.com/user-attachments/assets/d99cc5e3-7541-4e6a-a658-bce9c5586c10)
+   ![image](https://github.com/user-attachments/assets/d99cc5e3-7541-4e6a-a658-bce9c5586c10)
 
 - **Customers Data:** Concatenate first name, last name, and prefix to create a full name column. Data is reordered and saved as Parquet.
   ```python
@@ -70,7 +70,7 @@ The project is structured using the Medallion Architecture to separate data proc
                 .mode('append')
                 .save('abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Customerrs')
   ```
-![Screenshot 2025-05-15 134917](https://github.com/user-attachments/assets/cb1b8438-aeff-41a0-b856-58a0d15238f3)
+   ![Screenshot 2025-05-15 134917](https://github.com/user-attachments/assets/cb1b8438-aeff-41a0-b856-58a0d15238f3)
 
 - **Product Data:** Split ProductSKU and ProductName columns and write to Silver layer.
   ```python
@@ -80,7 +80,7 @@ The project is structured using the Medallion Architecture to separate data proc
                 .mode('append')
                 .save('abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Products')
   ```
-![image](https://github.com/user-attachments/assets/d0addd7d-11bb-495f-9614-e9af0f1fec6f)
+   ![image](https://github.com/user-attachments/assets/d0addd7d-11bb-495f-9614-e9af0f1fec6f)
 
 - **Sales Data:**
   - Convert StockDate to timestamp
