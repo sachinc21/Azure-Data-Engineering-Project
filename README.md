@@ -98,14 +98,6 @@ The project is structured using the Medallion Architecture to separate data proc
 
 - **Territories and Returns Data:** Directly written to Silver layer as Parquet.
 
-- Create a Databricks notebook for data processing.
-- Implement the following transformations using PySpark:
-  - Schema definition and enforcement
-  - Null handling using `dropna()` and `fillna()`
-  - Data deduplication using `dropDuplicates()`
-  - Data type conversions (e.g., timestamp parsing)
-  - Aggregation to calculate daily commit counts and top commit authors
-- Save cleaned data to the Silver layer and aggregated data to the Gold layer under paths `silver/commits` and `gold/commit_summary`.
 
 ### Step 3: Data Storage & Partitioning
 - Data is partitioned by date (`YYYY/MM/DD`) for easy querying and cost optimization.
