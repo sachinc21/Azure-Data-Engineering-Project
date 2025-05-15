@@ -94,6 +94,7 @@ The project is structured using the Medallion Architecture to separate data proc
                 .mode('append')
                 .save('abfss://silver@storagedatalakede.dfs.core.windows.net/AdventureWorks_Sales')
   ```
+   ![image](https://github.com/user-attachments/assets/d2846c95-8794-442b-827c-69fa021ce25e)
 
 - **Territories and Returns Data:** Directly written to Silver layer as Parquet.
 
@@ -229,9 +230,4 @@ The project is structured using the Medallion Architecture to separate data proc
 - Querying large datasets in Azure Synapse Analytics to extract actionable insights
 - Monitoring data flow and storage costs to optimize resource usage
 
-## 🖼️ Screenshots
-1. **Data Lake Folder Structure (Bronze, Silver, Gold)**
-2. **Databricks PySpark Notebook (Data Transformation)**
-3. **Synapse Query Results (Top Authors, Daily Commits)**
-4. **Data Ingestion Sample JSON Files**
 
